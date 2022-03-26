@@ -1,0 +1,7 @@
+services:
+    game:
+        build: .
+        tty: True
+        stdin_open: True
+        volumes:
+            - .:/app
