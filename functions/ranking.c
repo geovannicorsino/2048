@@ -4,27 +4,45 @@
 
 char *pathRanking = "/app/resources/";
 
+struct PlayerScore
+{
+    char *name;
+    int score;
+};
+
 seeRanking()
 {
+    struct PlayerScore players[10];
     int level = 1;
+    int quantityPlayers = 0;
 
     switch (level)
     {
     case 1:
-        readRanking("ranking_level1.txt");
+        quantityPlayers = readRanking("ranking_level1.txt", players);
     default:
         break;
     }
+
+    bubbleSort(players, quantityPlayers);
+
+    int i;
+    for (i = 0; i < quantityPlayers; i++)
+    {
+        printf("Name: %s \n", players[i].name);
+        printf("Score: %d \n", players[i].score);
+    }
 }
 
-readRanking(char nameFile[])
-{  
+int readRanking(char nameFile[], struct PlayerScore players[10])
+{
+    int quantityPlayers = 0;
     FILE *ptr;
     char str[50];
-    char path[60] = "";
+    char path[100] = "";
     strcat(path, pathRanking);
     strcat(path, nameFile);
-    ptr = fopen(pathRanking, "a+");
+    ptr = fopen(path, "a+");
 
     if (NULL == ptr)
     {
@@ -32,25 +50,52 @@ readRanking(char nameFile[])
     }
     while (fgets(str, 50, ptr) != NULL)
     {
-        char *users = strtok(str, ";");
+        int is_nickname = 1;
+        char *user = strtok(str, ":");
+        char *name;
 
-        while (users != NULL)
+        while (user != NULL)
         {
-            char *user = strtok(str, ":");
-
-            while (user != NULL)
+            if (is_nickname == 1)
             {
-
-                user = strtok(NULL, " ");
+                players[quantityPlayers].name = strdup(user);
             }
-            users = strtok(NULL, " ");
+            else
+            {
+                players[quantityPlayers].score = atoi(user);
+            }
+            is_nickname = 0;
+            user = strtok(NULL, " ");
         }
+        quantityPlayers++;
     }
     fclose(ptr);
-    return 0;
+
+    return quantityPlayers;
+}
+
+bubbleSort(struct PlayerScore players[10], int n)
+{
+    int i, j;
+    for (i = 0; i < n - 1; i++)
+    {
+        for (j = 0; j < n - i - 1; j++)
+        {
+            if (players[j].score < players[j + 1].score)
+            {
+                char *name = strdup(players[j].name);
+                int score = players[j].score;
+                players[j].name = strdup(players[j + 1].name);
+                players[j].score = players[j + 1].score;
+                players[j + 1].name = strdup(name);
+                players[j + 1].score = score;
+            }
+        }
+    }
 }
 
 int main()
 {
+    seeRanking();
     return 0;
 }

@@ -173,26 +173,22 @@ moveUp(int size, int board[size][size])
 
 moveGame(int size, int board[size][size], int direction)
 {
-    int w = 8;
-    int s = 2;
-    int l = 4;
-    int r = 6;
-
-    if (direction == KEY_UP)
+    switch (direction)
     {
+    case KEY_UP:
         moveUp(size, board);
-    }
-    else if (direction == KEY_DOWN)
-    {
+        break;
+    case KEY_DOWN:
         moveDown(size, board);
-    }
-    else if (direction == KEY_LEFT)
-    {
+        break;
+    case KEY_LEFT:
         moveLeft(size, board);
-    }
-    else if (direction == KEY_RIGHT)
-    {
+        break;
+    case KEY_RIGHT:
         moveRight(size, board);
+        break;
+    default:
+        break;
     }
     checkStatus(size, board);
 }
