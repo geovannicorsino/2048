@@ -1,19 +1,20 @@
-## **2048**
+# **2048**
 
 The game 2048 developed in c
 
 ##	🚧 🚀 Under construction...  🚧
 
 
-### 🚧 **PREREQUISITES**
+### 🚧 **PREREQUISITES** 
 
-- Clone the project
-  
+ Clone the project
+
+-  
   1. HTTPS
 ```bash
 git clone https://github.com/geovannicorsino/2048.git
 ```
-
+-
   2. SSH
 ```bash
 git clone git@github.com:geovannicorsino/2048.git
@@ -27,7 +28,7 @@ git clone git@github.com:geovannicorsino/2048.git
 
 
 ```bash
- ./src/main.o
+ ./main.o
 ```
 
 ### 🛠️  **TECH STACK**
