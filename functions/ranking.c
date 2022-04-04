@@ -3,6 +3,8 @@
 #include <string.h>
 
 char *pathRanking = "/app/resources/";
+char *nickname = "ha";
+int score = 0;
 
 struct PlayerScore
 {
@@ -10,9 +12,8 @@ struct PlayerScore
     int score;
 };
 
-seeRanking()
+seeRanking(struct PlayerScore players[10])
 {
-    struct PlayerScore players[10];
     int level = 1;
     int quantityPlayers = 0;
 
@@ -25,13 +26,6 @@ seeRanking()
     }
 
     bubbleSort(players, quantityPlayers);
-
-    int i;
-    for (i = 0; i < quantityPlayers; i++)
-    {
-        printf("Name: %s \n", players[i].name);
-        printf("Score: %d \n", players[i].score);
-    }
 }
 
 int readRanking(char nameFile[], struct PlayerScore players[10])
@@ -94,8 +88,39 @@ bubbleSort(struct PlayerScore players[10], int n)
     }
 }
 
+int addNewUserToRanking()
+{
+    char *nameFile = "ranking_level1.txt";
+    char path[100] = "";
+    strcat(path, pathRanking);
+    strcat(path, nameFile);
+    FILE *fPtr;
+    fPtr = fopen(path, "a+");
+
+    if (fPtr == NULL)
+    {
+        printf("\nUnable to open '%s' file.\n", "test.txt");
+        printf("Please check whether file exists and you have write privilege.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    char str[5];
+    sprintf(str, "%d", score);
+
+    char dataToAppend[100] = "";
+    strcat(dataToAppend, nickname);
+    strcat(dataToAppend, ":");
+    strcat(dataToAppend, str);
+    strcat(dataToAppend, ";\n");
+
+    fputs(dataToAppend, fPtr);
+    fclose(fPtr);
+    return 1;
+}
 int main()
 {
-    seeRanking();
+    // addNewUserToRanking();
+    struct PlayerScore players[10];
+    seeRanking(players);
     return 0;
 }
