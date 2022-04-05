@@ -23,12 +23,12 @@ git clone git@github.com:geovannicorsino/2048.git
 ### 🚀 **HOW TO RUN**
 
 ```bash
- gcc src/main.c -o main.o -lncurses -ltinfo
+gcc src/main.c -o main.o -lncurses -ltinfo
 ```
 
 
 ```bash
- ./main.o
+./main.o
 ```
 
 ### 🛠️  **TECH STACK**

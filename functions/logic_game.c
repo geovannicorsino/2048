@@ -538,7 +538,6 @@ showGame(int size, int board[size][size])
     case 3:
         screenLevel3(size, board);
         break;
-        break;
 
     default:
         break;

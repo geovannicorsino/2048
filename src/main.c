@@ -19,6 +19,9 @@ char *pathRanking = "/app/resources/";
 int row, col, level;
 int score = 0;
 int maxSquare = 64;
+int ENTER = 10;
+int DEL = 263;
+int DEL2 = 330;
 
 int is_login = 0;
 
@@ -277,9 +280,11 @@ moveUp(int size, int board[size][size])
 
 int moveGame(int size, int board[size][size], int direction, int boardBefore[size][size], int back)
 {
+	mvprintw(row + 23, col, "|>=============================================================================================<|\n");
 	switch (direction)
 	{
 	case KEY_UP:
+		mvprintw(row + 24, col, "|>=============================================================================================<|\n");
 		moveUp(size, board);
 		break;
 	case KEY_DOWN:
@@ -535,6 +540,70 @@ char *addSpacesInt(int num, int size)
 	return addSpaces(str, size);
 }
 
+char *readInput(int field, int screenError)
+{
+	int num;
+	char ch;
+	char name[20] = "";
+	while (num != ENTER && num != EXIT)
+	{
+		if (field == 1)
+		{
+			mvprintw(row + 15, col, "|>                                  -> NOME: %s                              <|\n", addSpaces(name, 20));
+		}
+		else
+		{
+			mvprintw(row + 17, col, "|>                                  -> SENHA: %s                             <|\n", addSpaces(name, 20));
+		}
+		refresh();
+		num = getch();
+		if ((num >= 97 && num <= 122) || (num >= 65 && num <= 90))
+		{
+			ch = num;
+			strncat(name, &ch, 1);
+			if (strlen(name) >= 20)
+			{
+				if (screenError == 1)
+				{
+					screenInvalidLogin();
+				}
+				else if (screenError == 2)
+				{
+					screenInvalidNewUser(2);
+				}
+			}
+		}
+		else if (num == DEL || num == DEL2)
+		{
+			name[strlen(name) - 1] = '\0';
+		}
+	}
+	if (num == ENTER)
+	{
+		mvprintw(row + 15, col, "|>                                     NOME: %s                              <|\n", addSpaces(name, 20));
+	}
+
+	if (num == EXIT)
+	{
+		num = 0;
+		screenInit();
+	}
+	else if (strlen(name) == 0)
+	{
+		if (screenError == 1)
+		{
+			screenInvalidLogin();
+		}
+		else if (screenError == 2)
+		{
+			screenInvalidNewUser(2);
+		}
+	}
+
+	num = 0;
+	return strdup(name);
+}
+
 int login()
 {
 	FILE *ptr;
@@ -692,7 +761,7 @@ int screenInit()
 	mvprintw(row + 14, col, "|>                                   _________________________                                 <|\n");
 	mvprintw(row + 15, col, "|>                                  | ENTRAR               (1)|                                <|\n");
 	mvprintw(row + 16, col, "|>                                  | CRIAR CONTA          (2)|                                <|\n");
-	mvprintw(row + 17, col, "|>                                  | RANKING              (3)|                                <|\n");
+	mvprintw(row + 17, col, "|>                                  | MELHORES COLOCADOS   (3)|                                <|\n");
 	mvprintw(row + 18, col, "|>                                  | SOBRE O JOGO         (4)|                                <|\n");
 	mvprintw(row + 19, col, "|>                                  |_________________________|                                <|\n");
 	mvprintw(row + 20, col, "|>                                                                                             <|\n");
@@ -842,6 +911,42 @@ screenChooseLevelGame()
 	}
 }
 
+screenInvalidLogin()
+{
+	title();
+	mvprintw(row + 11, col, "|>                          *******************************************                        <|\n");
+	mvprintw(row + 12, col, "|>                          *          NOME OU SENHA INCORRETOS       *                        <|\n");
+	mvprintw(row + 13, col, "|>                          *******************************************                        <|\n");
+	mvprintw(row + 14, col, "|>                                                                                             <|\n");
+	mvprintw(row + 15, col, "|>                                   _________________________                                 <|\n");
+	mvprintw(row + 16, col, "|>                                  | TENTAR NOVAMENTE     (1)|                                <|\n");
+	mvprintw(row + 17, col, "|>                                  | VOLTAR PARA O INICIO (2)|                                <|\n");
+	mvprintw(row + 18, col, "|>                                  |_________________________|                                <|\n");
+	mvprintw(row + 19, col, "|>                                                                                             <|\n");
+	mvprintw(row + 20, col, "|>                                                                                             <|\n");
+	mvprintw(row + 21, col, "|>                                                                                             <|\n");
+	mvprintw(row + 22, col, "|>=============================================================================================<|\n");
+	int change;
+	int ch;
+	while (change == 0)
+	{
+		ch = getch();
+		switch (ch)
+		{
+		case OP1:
+			level = 1;
+			screenLogin();
+			break;
+		case OP2:
+			level = 2;
+			screenInit();
+			break;
+		default:
+			break;
+		}
+	}
+}
+
 screenLogin()
 {
 	int ch;
@@ -855,27 +960,19 @@ screenLogin()
 	mvprintw(row + 17, col, "|>                                     SENHA:                                                  <|\n");
 	mvprintw(row + 18, col, "|>                                                                                             <|\n");
 	mvprintw(row + 19, col, "|>                                                                                             <|\n");
-	mvprintw(row + 20, col, "|>                                                                                             <|\n");
+	mvprintw(row + 20, col, "|>                                     | VOLTAR (0)|                                           <|\n");
 	mvprintw(row + 21, col, "|>                                                                                             <|\n");
 	mvprintw(row + 22, col, "|>=============================================================================================<|\n");
 	attron(COLOR_PAIR(1));
 
 	char str[50];
 
-	echo();
+	nickname = readInput(1, 1);
 
-	mvprintw(row + 15, col + 45, "%s", "");
-	getstr(str);
-	nickname = strdup(str);
+	password = readInput(2, 1);
 
-	mvprintw(row + 17, col + 46, "%s", "");
-	getstr(str);
-	password = strdup(str);
-
-	mvprintw(LINES - 3, 0, "Você digitou: %s", nickname);
-	mvprintw(LINES - 2, 0, "Você digitou: %s", password);
 	attron(COLOR_PAIR(1));
-	noecho();
+
 	refresh();
 	if (login() == 1)
 	{
@@ -884,13 +981,54 @@ screenLogin()
 	}
 	else
 	{
-		printw("\n Error \n");
-		getch();
+		screenInvalidLogin();
+	}
+}
+
+screenInvalidNewUser(int error)
+{
+	title();
+	mvprintw(row + 11, col, "|>                          *******************************************                        <|\n");
+	if (error == 2)
+	{
+		mvprintw(row + 12, col, "|>                          *          NOME OU SENHA INVALIDO         *                        <|\n");
+	}
+
+	mvprintw(row + 13, col, "|>                          *******************************************                        <|\n");
+	mvprintw(row + 14, col, "|>                                                                                             <|\n");
+	mvprintw(row + 15, col, "|>                                   _________________________                                 <|\n");
+	mvprintw(row + 16, col, "|>                                  | TENTAR NOVAMENTE     (1)|                                <|\n");
+	mvprintw(row + 17, col, "|>                                  | VOLTAR PARA O INICIO (2)|                                <|\n");
+	mvprintw(row + 18, col, "|>                                  |_________________________|                                <|\n");
+	mvprintw(row + 19, col, "|>                                                                                             <|\n");
+	mvprintw(row + 20, col, "|>                                                                                             <|\n");
+	mvprintw(row + 21, col, "|>                                                                                             <|\n");
+	mvprintw(row + 22, col, "|>=============================================================================================<|\n");
+	int change;
+	int ch;
+	while (change == 0)
+	{
+		ch = getch();
+		switch (ch)
+		{
+		case OP1:
+			level = 1;
+			screenNewUser();
+			break;
+		case OP2:
+			level = 2;
+			screenInit();
+			break;
+		default:
+			break;
+		}
 	}
 }
 
 screenNewUser()
 {
+	nickname = "";
+	password = "";
 	int ch;
 	title();
 	mvprintw(row + 11, col, "|>                       ***********************************************                       <|\n");
@@ -902,28 +1040,14 @@ screenNewUser()
 	mvprintw(row + 17, col, "|>                                     SENHA:                                                  <|\n");
 	mvprintw(row + 18, col, "|>                                                                                             <|\n");
 	mvprintw(row + 19, col, "|>                                                                                             <|\n");
-	mvprintw(row + 20, col, "|>                                                                                             <|\n");
+	mvprintw(row + 20, col, "|>                                  | VOLTAR (0)|                                              <|\n");
 	mvprintw(row + 21, col, "|>                                                                                             <|\n");
 	mvprintw(row + 22, col, "|>=============================================================================================<|\n");
 	attron(COLOR_PAIR(1));
 
-	char str[50];
+	nickname = readInput(1, 2);
 
-	echo();
-
-	mvprintw(row + 15, col + 45, "%s", "");
-	getstr(str);
-	nickname = strdup(str);
-
-	mvprintw(row + 17, col + 46, "%s", "");
-	getstr(str);
-	password = strdup(str);
-
-	mvprintw(LINES - 3, 0, "Você digitou: %s", nickname);
-	mvprintw(LINES - 2, 0, "Você digitou: %s", password);
-	attron(COLOR_PAIR(1));
-	noecho();
-	refresh();
+	password = readInput(2, 2);
 
 	switch (addNewUser())
 	{
@@ -986,7 +1110,7 @@ int screenRankingLevel(int level)
 	struct PlayerScore players[10];
 	seeRanking(players, level);
 	title();
-	mvprintw(row + 11, col, "|>                                   * RANKING NIVEL %i *                     VOLTAR(0)         <|\n", level);
+	mvprintw(row + 11, col, "|>                                   * RANKING NIVEL %i *                                       <|\n", level);
 	mvprintw(row + 12, col, "|>                                                                                             <|\n");
 	mvprintw(row + 13, col, "|>                          1*- %s %s                                  <|\n", addSpaces(players[0].name, 20), addSpacesInt(players[0].score, 8));
 	mvprintw(row + 14, col, "|>                                                                                             <|\n");
@@ -996,7 +1120,7 @@ int screenRankingLevel(int level)
 	mvprintw(row + 18, col, "|>                                                                                             <|\n");
 	mvprintw(row + 19, col, "|>                          4*- %s %s                                  <|\n", addSpaces(players[3].name, 20), addSpacesInt(players[3].score, 8));
 	mvprintw(row + 20, col, "|>                                                                                             <|\n");
-	mvprintw(row + 21, col, "|>                          5*- %s %s                                  <|\n", addSpaces(players[4].name, 20), addSpacesInt(players[4].score, 8));
+	mvprintw(row + 21, col, "|>                          5*- %s %s                     VOLTAR(0)    <|\n", addSpaces(players[4].name, 20), addSpacesInt(players[4].score, 8));
 	mvprintw(row + 22, col, "|>=============================================================================================<|\n");
 	int ch = 0;
 
@@ -1142,7 +1266,7 @@ screenGame()
 				is_back = 0;
 			}
 		}
-		else if (position == OP1 || position == OP4 || OP5)
+		else if (position == OP1 || position == OP4 || position == OP5)
 		{
 			keep = position;
 			break;
@@ -1194,7 +1318,7 @@ int main()
 	row = row / 6;
 
 	init_color(COLOR_BLACK, 0, 0, 0);
-	init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(1, COLOR_RED, COLOR_BLACK);
 
 	screenInit();
 

@@ -12,8 +12,7 @@ int randomPosition(int maxNumber)
 
 int main()
 {
-
-    printf("%d\n", randomZ(10));
+    printf("%d\n", randomPosition(10));
 
     // exit(EXIT_SUCCESS);
 }
