@@ -4,41 +4,52 @@ The game 2048 developed in c
 
 ### 🚧 **PREREQUISITES** 
 
- - Clone the project
-
-  
-  1. HTTPS
-```bash
-git clone https://github.com/geovannicorsino/2048.git
-```
-
-  2. SSH
-```bash
-git clone git@github.com:geovannicorsino/2048.git
-```
-
-- Access the project and build the container
-
-```bash
-docker build -t game2048:latest .
-```
-
- - Start the container
-
-```bash
-docker run --name game -v ${PWD}/:/app game2048
-```
+Before starting, you will need to have the following tools installed on your machine:
+[Git](https://git-scm.com), [Docker](https://docs.docker.com/desktop/windows/install/). 
+I recommend using the [VSCode](https://code.visualstudio.com/)
 
 ### 🎲 **HOW TO RUN**
 
-```bash
-gcc src/main.c -o main.o -lncurses -ltinfo
-```
+* Clone the project
 
+   *  HTTPS
+  ```bash
+  git clone https://github.com/geovannicorsino/2048.git
+  ```
+   * SSH
+   ```bash
+   git clone git@github.com:geovannicorsino/2048.git
+   ```
 
-```bash
-./main.o
-```
+<br/>
+
+* Docker steps
+
+   * Build
+   ```bash
+   docker build -t game2048:latest .
+   ```
+
+   * Run
+   ```bash
+   docker run --name game -v ${PWD}/:/app game2048
+   ```
+   
+<br/>
+
+* Run code
+
+    * Create the compiled file
+    ```bash
+    gcc src/main.c -o main.o -lncurses -ltinfo
+    ```
+
+    * Run the compiled file
+    ```bash
+    ./main.o
+    ```
+
+<br/>
 
 ### 🛠️  **TECH STACK**
 
