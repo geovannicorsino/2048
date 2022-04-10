@@ -1,26 +1,35 @@
-# **2048**
+# 🚀 **2048**
 
 The game 2048 developed in c
 
-##	🚧 🚀 Under construction...  🚧
-
-
 ### 🚧 **PREREQUISITES** 
 
- Clone the project
+ - Clone the project
 
--  
+  
   1. HTTPS
 ```bash
 git clone https://github.com/geovannicorsino/2048.git
 ```
--
+
   2. SSH
 ```bash
 git clone git@github.com:geovannicorsino/2048.git
 ```
 
-### 🚀 **HOW TO RUN**
+- Access the project and build the container
+
+```bash
+docker build -t game2048:latest .
+```
+
+ - Start the container
+
+```bash
+docker run --name game -v ${PWD}/:/app game2048
+```
+
+### 🎲 **HOW TO RUN**
 
 ```bash
 gcc src/main.c -o main.o -lncurses -ltinfo
