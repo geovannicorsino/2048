@@ -1,4 +1,5 @@
 geovanni:100;
-peter:99;
-batman:98;
-jey:100;
+peter:0;
+batman:0;
+robin:0;
+jey:0;

@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *nickname = "Geovanni";
-char *password = "123";
+char *nickname = "";
+char *password = "";
 char *path_users = "/app/resources/users.txt";
 
 int addNewUser()
@@ -23,8 +23,11 @@ int addNewUser()
     strcat(dataToAppend, ":");
     strcat(dataToAppend, password);
     strcat(dataToAppend, ";\n");
-
-    if (strlen(nickname) > 20)
+    if (nickname == "" || password == "")
+    {
+        return 2;
+    }
+    if (strlen(nickname) > 20 && strlen(nickname) < 3)
     {
         return 2;
     }

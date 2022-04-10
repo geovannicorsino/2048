@@ -1,33 +1,37 @@
 #include <ncurses.h>
+#include <stdlib.h>
+#include <string.h>
 
-int main()
+int main(int argc, char **argv)
 {
-    int ch;
 
+    // Mensagem aparece na tela
+    char mesg[] = "Digite uma mensagem: ";
+    char str[80];
+    char *nick;
+
+    // para armazenar o número de linhas e o número de colunas da tela
+    int row, col;
+
+    // inicia a ncurses
     initscr();
-    raw();
-    keypad(stdscr, TRUE);
+    start_color();        /* Começa a funcionalidade das cores */
+    cbreak();             /* Buffer de linha desativado, passe tudo para mim */
+    keypad(stdscr, TRUE); /* Preciso daquele F1 bacana */
     noecho();
 
-    printw("Pressione alguma tecla e a mesma será exibida em negrito.\n");
-    ch = getch();
+    init_color(COLOR_BLACK, 0, 0, 0);
 
-    if (ch == KEY_F(1))
-    {
-        printw("A tecla F1 foi pressionada!");
-    }
-    else
-    {
-        printw("A tecla que você pressionou foi: ");
-        // attron(A_BOLD);
-        if (ch == KEY_UP)
-        {
-            printw("boa %c", ch);
-        }
+    // obtém o número de linhas e colunas
+    getmaxyx(stdscr, row, col);
 
-        // attroff(A_BOLD);
-    }
-    refresh();
+    // imprime a mensagem no centro da tela
+    echo();
+    mvprintw(row / 2, col / 2, "%s", "mesg");
+    getstr(str);
+    nick = str;
+
+    mvprintw(LINES - 2, 0, "Você digitou: %s", nick);
     getch();
     endwin();
 

@@ -2,10 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *nickname = "MA";
-char *password = "789";
+char *nickname = "Geovanni";
+char *password = "123";
 char *path_users = "/app/resources/users.txt";
-
 
 int login()
 {

@@ -15,10 +15,12 @@ char *nickname;
 char *password;
 char *pathUsers = "/app/resources/users.txt";
 char *pathRanking = "/app/resources/";
+char *pathSavedGame = "/app/resources/saved_game.txt";
+char *pathSavedGameR = "/app/resources/saved_gamec.txt";
 
 int row, col, level;
 int score = 0;
-int maxSquare = 64;
+int maxSquare = 2048;
 int ENTER = 10;
 int DEL = 263;
 int DEL2 = 330;
@@ -322,6 +324,36 @@ int checkValidMove(int size, int b1[size][size], int b2[size][size])
 	return 0;
 }
 
+int addNewUserToRanking()
+{
+	char *nameFile = "ranking_level1.txt";
+	char path[100] = "";
+	strcat(path, pathRanking);
+	strcat(path, nameFile);
+	FILE *fPtr;
+	fPtr = fopen(path, "a+");
+
+	if (fPtr == NULL)
+	{
+		printf("\nUnable to open '%s' file.\n", "test.txt");
+		printf("Please check whether file exists and you have write privilege.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	char str[5];
+	sprintf(str, "%d", score);
+
+	char dataToAppend[100] = "";
+	strcat(dataToAppend, nickname);
+	strcat(dataToAppend, ":");
+	strcat(dataToAppend, str);
+	strcat(dataToAppend, ";\n");
+
+	fputs(dataToAppend, fPtr);
+	fclose(fPtr);
+	return 1;
+}
+
 int checkStatus(int size, int board[size][size])
 {
 	int numberZeros = 0;
@@ -338,7 +370,7 @@ int checkStatus(int size, int board[size][size])
 			}
 			else if (board[i][j] == maxSquare)
 			{
-				return 1;
+				return addNewUserToRanking();
 			}
 		}
 	}
@@ -787,7 +819,7 @@ int screenInit()
 			change = 4;
 			break;
 		case OP4:
-			change = 5;
+			change = 7;
 			break;
 		case EXIT:
 			endwin();
@@ -822,16 +854,50 @@ chooseScreen(int screen)
 	case 6:
 		screenMenu();
 		break;
+	case 7:
+		screenAboutGame();
+		break;
 	default:
 		break;
 	}
 }
 
+int screenAboutGame()
+{
+	title();
+	mvprintw(row + 11, col, "|>                                                                                             <|\n");
+	mvprintw(row + 12, col, "|>                          2048 é um jogo de raciocínio criado em março de                 <|\n");
+	mvprintw(row + 13, col, "|>                          2014 pelo desenvolvedor italiano Gabriele Cirulli, em              <|\n");
+	mvprintw(row + 14, col, "|>                          que o objetivo é deslizar peças numeradas em uma                 <|\n");
+	mvprintw(row + 15, col, "|>                          grade, combiná-las e criar um azulejo com o número 2048.           <|\n");
+	mvprintw(row + 16, col, "|>                          Cirulli criou o jogo em um único fim de semana.                   <|\n");
+	mvprintw(row + 17, col, "|>                                                                                             <|\n");
+	mvprintw(row + 18, col, "|>                                                                                             <|\n");
+	mvprintw(row + 19, col, "|>                                                                                             <|\n");
+	mvprintw(row + 20, col, "|>                                                                                             <|\n");
+	mvprintw(row + 21, col, "|>                                                                             VOLTAR (0)      <|\n");
+	mvprintw(row + 22, col, "|>=============================================================================================<|\n");
+	int change = 0;
+	int ch = 0;
+	while (change == 0)
+	{
+		ch = getch();
+		switch (ch)
+		{
+		case EXIT:
+			screenInit();
+			break;
+		default:
+			break;
+		}
+	}
+	return 0;
+}
 screenChooseRanking()
 {
 	title();
 	mvprintw(row + 11, col, "|>                               ***********************************                           <|\n");
-	mvprintw(row + 12, col, "|>                               * DIGITE QUAL RANKING DESEJA VER *                            <|\n");
+	mvprintw(row + 12, col, "|>                               * DIGITE QUAL TABELA DESEJA VER   *                            <|\n");
 	mvprintw(row + 13, col, "|>                               ***********************************                           <|\n");
 	mvprintw(row + 14, col, "|>                                   _________________________                                 <|\n");
 	mvprintw(row + 15, col, "|>                                  | NIVEL 1              (1)|                                <|\n");
@@ -842,8 +908,8 @@ screenChooseRanking()
 	mvprintw(row + 20, col, "|>                                                                                             <|\n");
 	mvprintw(row + 21, col, "|>                                                                                             <|\n");
 	mvprintw(row + 22, col, "|>=============================================================================================<|\n");
-	int change;
-	int ch;
+	int change = 0;
+	int ch = 0;
 	while (change == 0)
 	{
 		ch = getch();
@@ -867,7 +933,7 @@ screenChooseRanking()
 	}
 }
 
-screenChooseLevelGame()
+int screenChooseLevelGame()
 {
 	title();
 	mvprintw(row + 11, col, "|>                               ***********************************                           <|\n");
@@ -883,8 +949,8 @@ screenChooseLevelGame()
 	mvprintw(row + 21, col, "|>                                                                                             <|\n");
 	mvprintw(row + 22, col, "|>=============================================================================================<|\n");
 	attron(COLOR_PAIR(1));
-	int change;
-	int ch;
+	int change = 0;
+	int ch = 0;
 	while (change == 0)
 	{
 		ch = getch();
@@ -892,23 +958,25 @@ screenChooseLevelGame()
 		{
 		case OP1:
 			level = 1;
-			screenGame();
+			return playGame(0);
 			break;
 		case OP2:
 			level = 2;
-			screenGame();
+			return playGame(0);
 			break;
 		case OP3:
 			level = 3;
-			screenGame();
+			return playGame(0);
 			break;
 		case OP4:
-			screenMenu();
+			return screenMenu();
 			break;
 		default:
 			break;
 		}
 	}
+
+	return 0;
 }
 
 screenInvalidLogin()
@@ -926,8 +994,8 @@ screenInvalidLogin()
 	mvprintw(row + 20, col, "|>                                                                                             <|\n");
 	mvprintw(row + 21, col, "|>                                                                                             <|\n");
 	mvprintw(row + 22, col, "|>=============================================================================================<|\n");
-	int change;
-	int ch;
+	int change = 0;
+	int ch = 0;
 	while (change == 0)
 	{
 		ch = getch();
@@ -949,7 +1017,6 @@ screenInvalidLogin()
 
 screenLogin()
 {
-	int ch;
 	title();
 	mvprintw(row + 11, col, "|>                          *******************************************                        <|\n");
 	mvprintw(row + 12, col, "|>                          * DIGITE SEUS DADOS DE ACESSO PARA ENTRAR *                        <|\n");
@@ -989,9 +1056,18 @@ screenInvalidNewUser(int error)
 {
 	title();
 	mvprintw(row + 11, col, "|>                          *******************************************                        <|\n");
-	if (error == 2)
+	if (error == 4)
 	{
-		mvprintw(row + 12, col, "|>                          *          NOME OU SENHA INVALIDO         *                        <|\n");
+		mvprintw(row + 12, col, "|>                          *  OUTRO JOGADOR POSSUI ESSE NOME         *                        <|\n");
+	}
+	else if (error == 2)
+	{
+		mvprintw(row + 12, col, "|>                          *  NOME OU SENHA MUITO LONGO              *                        <|\n");
+	}
+
+	else
+	{
+		mvprintw(row + 12, col, "|>                          *  TENTE COM OUTROS DADOS                 *                        <|\n");
 	}
 
 	mvprintw(row + 13, col, "|>                          *******************************************                        <|\n");
@@ -1004,8 +1080,8 @@ screenInvalidNewUser(int error)
 	mvprintw(row + 20, col, "|>                                                                                             <|\n");
 	mvprintw(row + 21, col, "|>                                                                                             <|\n");
 	mvprintw(row + 22, col, "|>=============================================================================================<|\n");
-	int change;
-	int ch;
+	int change = 0;
+	int ch = 0;
 	while (change == 0)
 	{
 		ch = getch();
@@ -1029,7 +1105,6 @@ screenNewUser()
 {
 	nickname = "";
 	password = "";
-	int ch;
 	title();
 	mvprintw(row + 11, col, "|>                       ***********************************************                       <|\n");
 	mvprintw(row + 12, col, "|>                       * DIGITE SEUS DADOS DE ACESSO PARA O CADASTRO *                       <|\n");
@@ -1049,20 +1124,21 @@ screenNewUser()
 
 	password = readInput(2, 2);
 
-	switch (addNewUser())
-	{
-	case 1:
-		screenMenu();
-		break;
+	int r = addNewUser();
 
-	default:
-		printw("\n Error \n");
-		getch();
-		break;
+	if (r == 1)
+	{
+		screenMenu();
 	}
+	else
+	{
+		screenInvalidNewUser(r);
+	}
+
+	screenMenu();
 }
 
-screenMenu()
+int screenMenu()
 {
 	title();
 	mvprintw(row + 11, col, "|>                                 *****************************                               <|\n");
@@ -1070,13 +1146,14 @@ screenMenu()
 	mvprintw(row + 13, col, "|>                                 *****************************                               <|\n");
 	mvprintw(row + 14, col, "|>                                   _________________________                                 <|\n");
 	mvprintw(row + 15, col, "|>                                  | NOVO JOGO            (1)|                                <|\n");
-	mvprintw(row + 16, col, "|>                                  | RANKING              (2)|                                <|\n");
-	mvprintw(row + 17, col, "|>                                  | SAIR                 (3)|                                <|\n");
-	mvprintw(row + 18, col, "|>                                  |_________________________|                                <|\n");
-	mvprintw(row + 19, col, "|>                                                                                             <|\n");
+	mvprintw(row + 16, col, "|>                                  | CONTINUAR PARTIDA    (2)|                                <|\n");
+	mvprintw(row + 17, col, "|>                                  | RANKING              (3)|                                <|\n");
+	mvprintw(row + 18, col, "|>                                  | SAIR                 (4)|                                <|\n");
+	mvprintw(row + 19, col, "|>                                  |_________________________|                                <|\n");
 	mvprintw(row + 20, col, "|>                                                                                             <|\n");
 	mvprintw(row + 21, col, "|>                                                                                             <|\n");
 	mvprintw(row + 22, col, "|>=============================================================================================<|\n");
+	refresh();
 	int ch = 0;
 	int change = 0;
 
@@ -1089,9 +1166,12 @@ screenMenu()
 			change = 5;
 			break;
 		case OP2:
-			change = 4;
+			playGame(1);
 			break;
 		case OP3:
+			change = 4;
+			break;
+		case OP4:
 			change = 1;
 			break;
 		case EXIT:
@@ -1103,6 +1183,8 @@ screenMenu()
 		}
 	}
 	chooseScreen(change);
+
+	return 0;
 }
 
 int screenRankingLevel(int level)
@@ -1110,7 +1192,7 @@ int screenRankingLevel(int level)
 	struct PlayerScore players[10];
 	seeRanking(players, level);
 	title();
-	mvprintw(row + 11, col, "|>                                   * RANKING NIVEL %i *                                       <|\n", level);
+	mvprintw(row + 11, col, "|>                                   * MELHORES COLOCADOS DO NIVEL %i *                         <|\n", level);
 	mvprintw(row + 12, col, "|>                                                                                             <|\n");
 	mvprintw(row + 13, col, "|>                          1*- %s %s                                  <|\n", addSpaces(players[0].name, 20), addSpacesInt(players[0].score, 8));
 	mvprintw(row + 14, col, "|>                                                                                             <|\n");
@@ -1224,15 +1306,304 @@ showGame(int size, int board[size][size])
 	refresh();
 }
 
-screenGame()
+removeLine(int del)
 {
+	FILE *fptr1, *fptr2;
+	char curr;
+	int line_number = 0;
+
+	fptr1 = fopen(pathSavedGame, "r");
+	fptr2 = fopen(pathSavedGameR, "w");
+	curr = getc(fptr1);
+	if (curr != EOF)
+	{
+		line_number = 1;
+	}
+	while (1)
+	{
+		if (del != line_number)
+			putc(curr, fptr2);
+		curr = getc(fptr1);
+		if (curr == '\n')
+			line_number++;
+		if (curr == EOF)
+			break;
+	}
+
+	fclose(fptr1);
+	fclose(fptr2);
+
+	updateSaveGameTxt();
+}
+
+updateSaveGameTxt()
+{
+	FILE *fptr12, *fptr22;
+	char curr;
+	int del, line_number = 0;
+
+	fptr12 = fopen(pathSavedGameR, "r");
+	fptr22 = fopen(pathSavedGame, "w");
+	curr = getc(fptr12);
+	if (curr != EOF)
+	{
+		line_number = 1;
+	}
+	while (1)
+	{
+		if (del != line_number)
+			putc(curr, fptr22);
+		curr = getc(fptr12);
+		if (curr == '\n')
+			line_number++;
+		if (curr == EOF)
+			break;
+	}
+
+	fclose(fptr12);
+	fclose(fptr22);
+}
+
+int countPosition()
+{
+	int result = 1;
+	int position = 0;
+	int isSaved = 0;
+	FILE *ptr;
+	char str[500] = "";
+
+	ptr = fopen(pathSavedGame, "a+");
+
+	if (NULL == ptr)
+	{
+		printf("file can't be opened \n");
+	}
+	while (fgets(str, 500, ptr) != NULL)
+	{
+		char *info = strtok(str, ",");
+		int i = 0;
+		while (info != NULL)
+		{
+			if (i == 0)
+			{
+				if (!strcmp(nickname, info))
+				{
+					isSaved = 1;
+					position = result;
+				}
+				result++;
+			}
+			i++;
+			info = strtok(NULL, ",");
+		}
+	}
+	fclose(ptr);
+
+	if (isSaved == 1)
+	{
+		return position;
+	}
+	return 0;
+}
+
+int saveGame(int size, int board[size][size])
+{
+	char line[400] = "\n";
+	char str[10];
+	strcat(line, nickname);
+	strcat(line, ",");
+	sprintf(str, "%d", level);
+	strcat(line, str);
+	strcat(line, ",");
+	sprintf(str, "%d", score);
+	strcat(line, str);
+
+	int i, j;
+
+	for (i = 0; i < size; i++)
+	{
+		for (j = 0; j < size; j++)
+		{
+			sprintf(str, "%d", board[i][j]);
+			strcat(line, ",");
+			strcat(line, str);
+		}
+	}
+	strcat(line, ";");
+
+	int position = countPosition();
+	if (position > 0)
+	{
+		removeLine(position);
+	}
+
+	saveGameTxt(line);
+}
+
+int saveGameTxt(char data[400])
+{
+	FILE *fPtr;
+	fPtr = fopen(pathSavedGame, "a+");
+
+	if (fPtr == NULL)
+	{
+		printf("\nUnable to open '%s' file.\n", "test.txt");
+		printf("Please check whether file exists and you have write privilege.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	fputs(data, fPtr);
+	fclose(fPtr);
+	return 1;
+}
+
+int getSavedGame(int numbers[36])
+{
+	int result = 0;
+	FILE *ptr;
+	char str[1000];
+
+	ptr = fopen(pathSavedGame, "a+");
+
+	if (NULL == ptr)
+	{
+		printf("file can't be opened \n");
+	}
+	while (fgets(str, 1000, ptr) != NULL)
+	{
+		char *info = strtok(str, ",");
+		int i = 0;
+		while (info != NULL)
+		{
+			if (i == 0)
+			{
+				if (strcmp(nickname, info))
+				{
+					break;
+				}
+			}
+			else if (i == 1)
+			{
+				result = 1;
+				level = atoi(info);
+			}
+			else if (i == 2)
+			{
+				score = atoi(info);
+			}
+			else
+			{
+				numbers[i - 3] = atoi(info);
+			}
+			info = strtok(NULL, ",");
+			i++;
+		}
+	}
+	fclose(ptr);
+
+	return result;
+}
+
+int screenGameNotFound()
+{
+	title();
+	mvprintw(row + 11, col, "|>                          *******************************************                        <|\n");
+	mvprintw(row + 12, col, "|>                          *             NENHUM JOGO SALVO           *                        <|\n");
+	mvprintw(row + 13, col, "|>                          *******************************************                        <|\n");
+	mvprintw(row + 14, col, "|>                                                                                             <|\n");
+	mvprintw(row + 15, col, "|>                                   _________________________                                 <|\n");
+	mvprintw(row + 16, col, "|>                                  | NOVO JOGO            (1)|                                <|\n");
+	mvprintw(row + 17, col, "|>                                  | MENU                 (2)|                                <|\n");
+	mvprintw(row + 18, col, "|>                                  |_________________________|                                <|\n");
+	mvprintw(row + 19, col, "|>                                                                                             <|\n");
+	mvprintw(row + 20, col, "|>                                                                                             <|\n");
+	mvprintw(row + 21, col, "|>                                                                                             <|\n");
+	mvprintw(row + 22, col, "|>=============================================================================================<|\n");
+	int change = 0;
+	int ch = 0;
+	while (change == 0)
+	{
+		ch = getch();
+		switch (ch)
+		{
+		case OP1:
+			return screenChooseLevelGame();
+			break;
+		case OP2:
+			clear();
+			return screenMenu();
+			break;
+		default:
+			break;
+		}
+	}
+	return 0;
+}
+
+int screenEndGame(int rg)
+{
+	title();
+	mvprintw(row + 11, col, "|>                          *******************************************                        <|\n");
+	if (rg == 1)
+	{
+		mvprintw(row + 12, col, "|>                          *               GANHOU                    *                        <|\n");
+	}
+	else
+	{
+		mvprintw(row + 12, col, "|>                          *               PERDEU                    *                        <|\n");
+	}
+	mvprintw(row + 13, col, "|>                          *******************************************                        <|\n");
+	mvprintw(row + 14, col, "|>                                                                                             <|\n");
+	mvprintw(row + 15, col, "|>                                   _________________________                                 <|\n");
+	mvprintw(row + 16, col, "|>                                    NIVEL: %i                                                 <|\n", level);
+	mvprintw(row + 17, col, "|>                                    PONTOS: %s                                             <|\n", formatNumber(score));
+	mvprintw(row + 18, col, "|>                                   _________________________                                 <|\n");
+	mvprintw(row + 19, col, "|>                                                                                             <|\n");
+	mvprintw(row + 20, col, "|>                          PRESSIONE QUALQUER UMA TECLA PARA CONTINUAR                        <|\n");
+	mvprintw(row + 21, col, "|>                                                                                             <|\n");
+	mvprintw(row + 22, col, "|>=============================================================================================<|\n");
+	getch();
+	screenRankingLevel(level);
+}
+
+int playGame(int new)
+{
+	score = 0;
+	int numbers[36];
+	if (new == 1)
+	{
+		int r = getSavedGame(numbers);
+		if (r == 0)
+		{
+			return screenGameNotFound();
+		}
+	}
+
 	int boardSize = getBoardSize();
 	int board[boardSize][boardSize];
+
 	int boardCopy0[boardSize][boardSize];
 	int boardCopy1[boardSize][boardSize];
 	int position = 0;
 
-	generateBoard(boardSize, board);
+	if (new == 1)
+	{
+		int now = 0;
+		int i, j;
+		for (i = 0; i < boardSize; i = i + 1)
+		{
+			for (j = 0; j < boardSize; j = j + 1)
+			{
+				board[i][j] = numbers[now];
+				now++;
+			}
+		}
+	}
+	else
+	{
+		generateBoard(boardSize, board);
+	}
+
 	matrizCopy(boardSize, board, boardCopy0);
 	matrizCopy(boardSize, board, boardCopy1);
 
@@ -1266,6 +1637,11 @@ screenGame()
 				is_back = 0;
 			}
 		}
+		else if (position == OP3)
+		{
+			saveGame(boardSize, board);
+		}
+
 		else if (position == OP1 || position == OP4 || position == OP5)
 		{
 			keep = position;
@@ -1283,15 +1659,10 @@ screenGame()
 	switch (keep)
 	{
 	case 1:
-		clear();
-		printw("Boa \n");
-		getch();
-		screenRankingLevel(level);
+		screenEndGame(1);
 		break;
 	case 2:
-		clear();
-		printw("Perdeu \n");
-		getch();
+		screenEndGame(0);
 		break;
 	case OP1:
 		chooseScreen(5);
@@ -1305,6 +1676,7 @@ screenGame()
 	default:
 		break;
 	}
+	return 0;
 }
 
 int main()

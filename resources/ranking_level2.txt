@@ -1,0 +1,5 @@
+leornado:100;
+marco:0;
+rodrigo:0;
+superman:0;
+mando:0;

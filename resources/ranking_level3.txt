@@ -1,0 +1,5 @@
+anderson:100;
+maria:0;
+jao:0;
+asanoturna:0;
+tim:0;

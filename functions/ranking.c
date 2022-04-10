@@ -117,6 +117,7 @@ int addNewUserToRanking()
     fclose(fPtr);
     return 1;
 }
+
 int main()
 {
     // addNewUserToRanking();
