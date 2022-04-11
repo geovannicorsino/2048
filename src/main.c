@@ -18,7 +18,7 @@ char *pathRanking = "/app/resources/";
 char *pathSavedGame = "/app/resources/saved_game.txt";
 char *pathSavedGameR = "/app/resources/saved_gamec.txt";
 
-int row, col, level;
+int row, col, level = 0;
 int score = 0;
 int maxSquare = 2048;
 int ENTER = 10;
@@ -326,7 +326,20 @@ int checkValidMove(int size, int b1[size][size], int b2[size][size])
 
 int addNewUserToRanking()
 {
-	char *nameFile = "ranking_level1.txt";
+	char *nameFile;
+	if (level == 1)
+	{
+		nameFile = "ranking_level1.txt";
+	}
+	else if (level == 2)
+	{
+		nameFile = "ranking_level2.txt";
+	}
+	else if (level == 3)
+	{
+		nameFile = "ranking_level3.txt";
+	}
+
 	char path[100] = "";
 	strcat(path, pathRanking);
 	strcat(path, nameFile);
@@ -472,16 +485,17 @@ seeRanking(struct PlayerScore players[10], int level)
 {
 	int quantityPlayers = 0;
 
-	switch (level)
+	if (level == 1)
 	{
-	case 1:
 		quantityPlayers = readRanking("ranking_level1.txt", players);
-	case 2:
+	}
+	else if (level == 2)
+	{
 		quantityPlayers = readRanking("ranking_level2.txt", players);
-	case 3:
+	}
+	else if (level == 3)
+	{
 		quantityPlayers = readRanking("ranking_level3.txt", players);
-	default:
-		break;
 	}
 
 	bubbleSort(players, quantityPlayers);
@@ -897,7 +911,7 @@ screenChooseRanking()
 {
 	title();
 	mvprintw(row + 11, col, "|>                               ***********************************                           <|\n");
-	mvprintw(row + 12, col, "|>                               * DIGITE QUAL TABELA DESEJA VER   *                            <|\n");
+	mvprintw(row + 12, col, "|>                               *  DIGITE QUAL TABELA DESEJA VER  *                           <|\n");
 	mvprintw(row + 13, col, "|>                               ***********************************                           <|\n");
 	mvprintw(row + 14, col, "|>                                   _________________________                                 <|\n");
 	mvprintw(row + 15, col, "|>                                  | NIVEL 1              (1)|                                <|\n");
@@ -917,15 +931,19 @@ screenChooseRanking()
 		{
 		case OP1:
 			screenRankingLevel(1);
+			change = 1;
 			break;
 		case OP2:
 			screenRankingLevel(2);
+			change = 1;
 			break;
 		case OP3:
 			screenRankingLevel(3);
+			change = 1;
 			break;
 		case OP4:
 			screenInit();
+			change = 1;
 			break;
 		default:
 			break;
