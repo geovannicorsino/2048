@@ -590,16 +590,22 @@ char *readInput(int field, int screenError)
 {
 	int num;
 	char ch;
+	char pass[20] = "";
+	char ast = '*';
 	char name[20] = "";
+
 	while (num != ENTER && num != EXIT)
 	{
 		if (field == 1)
 		{
 			mvprintw(row + 15, col, "|>                                  -> NOME: %s                              <|\n", addSpaces(name, 20));
 		}
-		else
+		else if(field == 2)
 		{
 			mvprintw(row + 17, col, "|>                                  -> SENHA: %s                             <|\n", addSpaces(name, 20));
+		}else
+		{
+			mvprintw(row + 17, col, "|>                                  -> SENHA: %s                             <|\n", addSpaces(pass, 20));
 		}
 		refresh();
 		num = getch();
@@ -607,6 +613,7 @@ char *readInput(int field, int screenError)
 		{
 			ch = num;
 			strncat(name, &ch, 1);
+			strncat(pass, &ast, 1);
 			if (strlen(name) >= 20)
 			{
 				if (screenError == 1)
@@ -622,6 +629,7 @@ char *readInput(int field, int screenError)
 		else if (num == DEL || num == DEL2)
 		{
 			name[strlen(name) - 1] = '\0';
+			pass[strlen(pass) - 1] = '\0';
 		}
 	}
 	if (num == ENTER)
@@ -1054,7 +1062,7 @@ screenLogin()
 
 	nickname = readInput(1, 1);
 
-	password = readInput(2, 1);
+	password = readInput(3, 1);
 
 	attron(COLOR_PAIR(1));
 
